@@ -33,22 +33,41 @@ services:
     links:
       - pgsql:database
     ports:
-      - "8080:8080"
       - "2222:2222"
       - "5005:5005"
       - "5900:5900"
+      - "1099:1099"
     networks:
       - app_net
     environment:
       - S6_KILL_GRACETIME=300000
       - XMX=3g
+    labels:
+      - "traefik.docker.network=app_net"
+      - "traefik.enable=true"
+      - "traefik.frontend.rule=PathPrefix:/"
+      - "traefik.port=8080"
+
+  p6web:
+    container_name: p6web
+    image: traefik:1.7.11
+    depends_on:
+      - p6core
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - $INSTANCE_DATA_PATH/web:/etc/traefik
+    ports:
+      - "8080:8080" # P6 web default port
+      - "8481:8481" # Traefik Admin UI
+    networks:
+      - app_net
 
   # Only for testing on a local machine, you don't need this container in production
   p6proxy:
     container_name: p6proxy
     image: amalto/b2proxy
     depends_on:
-      - p6core
+      - p6web
     environment:
       - PROXY_PLAIN_PORT=8480
       - LOG_FORMAT=string

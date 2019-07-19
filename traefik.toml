@@ -1,0 +1,29 @@
+defaultEntryPoints = ["http"]
+logLevel = "DEBUG"
+
+
+[entryPoints]
+
+  [entryPoints.http]
+    address = ":8080"
+
+  [entryPoints.ui]
+    address = ":8481"
+
+
+[docker]
+  endpoint = "unix:///var/run/docker.sock"
+  watch = true
+  exposedByDefault = false
+
+
+# Dashboard config, only activate it in dev, never in production!
+[api]
+  entryPoint = "ui"
+  dashboard = true
+  debug = true
+
+
+# Log configuration
+[traefikLog]
+  filePath = "/etc/traefik/traefik.log"

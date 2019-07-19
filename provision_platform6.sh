@@ -47,7 +47,7 @@ echo "P6CORE_IMAGE_ID=$P6CORE_IMAGE_ID" >> .env
 echo "INSTANCE_DATA_PATH=$INSTANCE_DATA_PATH" >> .env
 echo "PGSQL_VERSION=$PGSQL_VERSION" >> .env
 
-# Delete old folders if any
+# Delete old folder if any
 rm -r $INSTANCE_DATA_PATH
 
 # Copy Platform 6 instance reference data
@@ -73,6 +73,10 @@ else
     echo "p6auth.client.secret=$CLIENT_SECRET" >> $INSTANCE_DATA_PATH/p6core.data/conf/application.conf
     echo "instance.id=$INSTANCE_ID" >> $INSTANCE_DATA_PATH/p6core.data/conf/application.conf
 fi
+
+# Copy Traefik web frontend config
+mkdir -p $INSTANCE_DATA_PATH/web
+cp ./traefik.toml $INSTANCE_DATA_PATH/web/
 
 # Start a database container that maps to the intended location on disk
 docker run -d --rm \
