@@ -43,22 +43,25 @@ services:
       - S6_KILL_GRACETIME=300000
       - XMX=3g
     labels:
-      - "traefik.docker.network=app_net"
       - "traefik.enable=true"
-      - "traefik.frontend.rule=PathPrefix:/"
-      - "traefik.port=8080"
+      - "traefik.http.routers.p6core.entrypoints=web"
+      - "traefik.http.routers.p6core.rule=PathPrefix(`/`)"
+      - "traefik.http.services.p6core.loadbalancer.server.port=8080"
 
-  p6web:
-    container_name: p6web
-    image: traefik:1.7.11
+  # The only purpose of this container is to offer TLS support thanks to Let's Encrypt and Traefik
+  reverse-proxy:
+    container_name: reverse-proxy
+    image: traefik:v2.0
+    # Enables the web UI and tells Traefik to listen to docker
     depends_on:
       - p6core
     volumes:
+      # So that Traefik can listen to Docker events
       - /var/run/docker.sock:/var/run/docker.sock
       - $INSTANCE_DATA_PATH/web:/etc/traefik
     ports:
-      - "8080:8080" # P6 web default port
-      - "8481:8481" # Traefik Admin UI
+      - "8080:8080" # Traefik web entry point
+      - "8481:8481" # Traefik admin UI entry point
     networks:
       - app_net
 
@@ -67,7 +70,7 @@ services:
     container_name: p6proxy
     image: amalto/b2proxy
     depends_on:
-      - p6web
+      - reverse-proxy
     environment:
       - PROXY_PLAIN_PORT=8480
       - LOG_FORMAT=string
@@ -103,9 +106,9 @@ services:
   # Light Ethereum blockchain explorer used by the Demo App, delete this container in production
   #demoexplorer:
   #  container_name: demoexplorer
-  #  image: alethio/ethstats-lite-explorer
+  #  image: alethio/ethereum-lite-explorer
   #  environment:
-  #    - NODE_URL='http://172.13.0.20:8545'
+  #    - APP_NODE_URL='http://172.13.0.20:8545'
   #  ports:
   #    - "80:80"
   #  networks:
