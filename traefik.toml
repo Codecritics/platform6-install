@@ -24,11 +24,27 @@
 [accessLog]
   filePath = "/etc/traefik/access.log"
   bufferingSize = 100
+  format = "json"
+
+  [accessLog.fields]
+    defaultMode = "keep"
+
+    [accessLog.fields.headers]
+      defaultMode = "keep"
 
 
 [entryPoints]
-  [entryPoints.web]
-    address = ":8080"
+
+  [entryPoints.web-secure]
+      address = ":443"
 
   [entryPoints.traefik]
-    address = ":8481"
+    address = ":444"
+
+
+# Certificate was generated using this procedure:
+# https://medium.com/@jonsamp/how-to-set-up-https-on-localhost-for-macos-b597bcf935ee
+# Copy cert and key from ~/.localhost-ssl/ to $INSTANCE_DATA_PATH/web/cert/
+[[tls.certificates]]
+  certFile = "/etc/traefik/localhost.cert"
+  keyFile = "/etc/traefik/localhost.key"

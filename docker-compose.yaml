@@ -44,8 +44,15 @@ services:
       - XMX=3g
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.p6core.entrypoints=web"
-      - "traefik.http.routers.p6core.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.p6core-sec-https.entrypoints=web-secure"
+      - "traefik.http.routers.p6core-sec-https.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.p6core-sec-https.tls=true"
+      - "traefik.http.routers.p6core-sec-https.tls.domains.main=reverse-proxy"
+      - "traefik.http.routers.p6core-sec-http.entrypoints=web-secure"
+      - "traefik.http.routers.p6core-sec-http.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.p6core-sec-http.middlewares=p6core-redirect@docker"
+      - "traefik.http.middlewares.p6core-redirect.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.p6core-redirect.redirectscheme.permanent=true"
       - "traefik.http.services.p6core.loadbalancer.server.port=8080"
 
   # The only purpose of this container is to offer TLS support thanks to Let's Encrypt and Traefik
@@ -60,8 +67,8 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - $INSTANCE_DATA_PATH/web:/etc/traefik
     ports:
-      - "8080:8080" # Traefik web entry point
-      - "8481:8481" # Traefik admin UI entry point
+      - "443:443" # Traefik https entry point
+      - "444:444" # Traefik admin UI entry point
     networks:
       - app_net
 
