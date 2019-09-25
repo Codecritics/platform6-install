@@ -35,16 +35,21 @@
 
 [entryPoints]
 
-  [entryPoints.web-secure]
-      address = ":443"
+  # Used for Let's Encrypt HTTP challenge
+  [entryPoints.web]
+    address = ":80"
 
+  [entryPoints.web-secure]
+    address = ":443"
+
+  # Used for Traefik's admin UI
   [entryPoints.traefik]
     address = ":444"
 
 
-# Certificate was generated using this procedure:
-# https://medium.com/@jonsamp/how-to-set-up-https-on-localhost-for-macos-b597bcf935ee
-# Copy cert and key from ~/.localhost-ssl/ to $INSTANCE_DATA_PATH/web/cert/
-[[tls.certificates]]
-  certFile = "/etc/traefik/localhost.cert"
-  keyFile = "/etc/traefik/localhost.key"
+[certificatesResolvers.p6core.acme]
+  email = "development@amalto.com"
+  storage = "/etc/traefik/acme.json"
+  [certificatesResolvers.p6core.acme.httpChallenge]
+    entryPoint = "web"
+
