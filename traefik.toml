@@ -24,7 +24,6 @@
 [accessLog]
   filePath = "/etc/traefik/access.log"
   bufferingSize = 100
-  format = "json"
 
   [accessLog.fields]
     defaultMode = "keep"
@@ -35,10 +34,6 @@
 
 [entryPoints]
 
-  # Used for Let's Encrypt HTTP challenge
-  [entryPoints.web]
-    address = ":80"
-
   [entryPoints.web-secure]
     address = ":443"
 
@@ -46,10 +41,10 @@
   [entryPoints.traefik]
     address = ":444"
 
-
+# Currently TLS challenge doesn't seem to work, that's why port 80 should remain open in Docker
+# Here's the command to add a new iptable rule to open port 443 to all:
+# iptables -A INPUT -p tcp -m tcp --dport 443 -m comment --comment "Open port 443 for ALL" -m state --state NEW -j ACCEPT
 [certificatesResolvers.p6core.acme]
   email = "development@amalto.com"
   storage = "/etc/traefik/acme.json"
-  [certificatesResolvers.p6core.acme.httpChallenge]
-    entryPoint = "web"
-
+  [certificatesResolvers.p6core.acme.tlsChallenge]

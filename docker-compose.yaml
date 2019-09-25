@@ -48,7 +48,7 @@ services:
       - "traefik.http.routers.p6core-https.rule=Host(`demoapp.amalto.com`)"
       - "traefik.http.routers.p6core-https.tls=true"
       - "traefik.http.routers.p6core-https.tls.certResolver=p6core"
-      - "traefik.http.routers.p6core-http.entrypoints=web"
+      - "traefik.http.routers.p6core-http.entrypoints=web-secure"
       - "traefik.http.routers.p6core-http.rule=Host(`demoapp.amalto.com`)"
       - "traefik.http.routers.p6core-http.middlewares=p6core-redirect@docker"
       - "traefik.http.middlewares.p6core-redirect.redirectscheme.scheme=https"
@@ -67,7 +67,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - $INSTANCE_DATA_PATH/web:/etc/traefik
     ports:
-      - "80:80"   # Let's Ecnrypt HTTP challenge entry point       
+      - "80:80"   # Only used by Let's Encrypt even in TLS challenge       
       - "443:443" # Traefik https entry point
       - "444:444" # Traefik admin UI entry point
     networks:
