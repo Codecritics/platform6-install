@@ -43,17 +43,17 @@ services:
       - S6_KILL_GRACETIME=300000
       - XMX=3g
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.p6core-https.entrypoints=web-secure"
-      - "traefik.http.routers.p6core-https.rule=Host(`demoapp.amalto.com`)"
-      - "traefik.http.routers.p6core-https.tls=true"
-      - "traefik.http.routers.p6core-https.tls.certResolver=p6core"
-      - "traefik.http.routers.p6core-http.entrypoints=web-secure"
-      - "traefik.http.routers.p6core-http.rule=Host(`demoapp.amalto.com`)"
-      - "traefik.http.routers.p6core-http.middlewares=p6core-redirect@docker"
-      - "traefik.http.middlewares.p6core-redirect.redirectscheme.scheme=https"
-      - "traefik.http.middlewares.p6core-redirect.redirectscheme.permanent=true"
-      - "traefik.http.services.p6core.loadbalancer.server.port=8080"
+      - traefik.enable=true
+      - traefik.http.routers.p6core-https.entrypoints=web-secure
+      - traefik.http.routers.p6core-https.rule=Host(`$PLATFORM6_DOMAIN`)
+      - traefik.http.routers.p6core-https.tls=true
+      - traefik.http.routers.p6core-https.tls.certResolver=p6core
+      - traefik.http.routers.p6core-http.entrypoints=web-secure
+      - traefik.http.routers.p6core-http.rule=Host(`$PLATFORM6_DOMAIN`)
+      - traefik.http.routers.p6core-http.middlewares=p6core-redirect@docker
+      - traefik.http.middlewares.p6core-redirect.redirectscheme.scheme=https
+      - traefik.http.middlewares.p6core-redirect.redirectscheme.permanent=true
+      - traefik.http.services.p6core.loadbalancer.server.port=8080
 
   # The only purpose of this container is to offer TLS support thanks to Let's Encrypt and Traefik
   reverse-proxy:
